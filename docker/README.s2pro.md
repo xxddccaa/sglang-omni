@@ -11,6 +11,13 @@ Run from the repo root:
 docker build -f docker/Dockerfile.s2pro -t sglang-omni-s2pro:local .
 ```
 
+If the normal image build fails because `descript-audiotools` conflicts with
+the base image's `protobuf/torch/sglang` stack, use the no-deps variant:
+
+```bash
+docker build -f docker/Dockerfile.s2pro-nodeps -t sglang-omni-s2pro:nodeps .
+```
+
 ## Run
 
 Mount your local model directory into `/models/s2-pro`:
@@ -24,6 +31,19 @@ docker run -d \
   --network host \
   -v /path/to/s2-pro:/models/s2-pro:ro \
   sglang-omni-s2pro:local
+```
+
+For the no-deps image:
+
+```bash
+docker run -d \
+  --name s2pro-tts \
+  --gpus all \
+  --shm-size 32g \
+  --ipc host \
+  --network host \
+  -v /path/to/s2-pro:/models/s2-pro:ro \
+  sglang-omni-s2pro:nodeps
 ```
 
 The container starts:

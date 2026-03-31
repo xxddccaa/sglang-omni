@@ -1,0 +1,41 @@
+FROM lmsysorg/sglang:dev
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PIP_NO_CACHE_DIR=1
+ENV PYTHONUNBUFFERED=1
+ENV HF_HOME=/root/.cache/huggingface
+ENV MODEL_PATH=/models/s2-pro
+ENV CONFIG_PATH=examples/configs/s2pro_tts.yaml
+ENV HOST=0.0.0.0
+ENV PORT=8000
+ENV MODEL_NAME=s2-pro
+ENV LOG_LEVEL=info
+
+WORKDIR /workspace/sglang-omni
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    git \
+    libgl1 \
+    libglib2.0-0 \
+    libsndfile1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /workspace/sglang-omni
+
+# The base image already contains the heavy SGLang / Torch stack.
+# Installing this repo with normal dependency resolution would try to
+# downgrade protobuf and reinstall torch/sglang, which breaks the image.
+# So we:
+# 1. install the repo itself without deps
+# 2. install only the extra FishAudio runtime packages without deps
+RUN python -m pip install --upgrade pip setuptools wheel \
+    && python -m pip install --no-deps -e . \
+    && python -m pip install --no-deps -r docker/requirements.s2pro-nodeps.txt
+
+COPY docker/entrypoint.s2pro.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 8000
+
+ENTRYPOINT ["/entrypoint.sh"]

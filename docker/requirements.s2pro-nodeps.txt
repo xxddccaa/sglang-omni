@@ -1,0 +1,13 @@
+hydra-core
+omegaconf
+tiktoken
+descript-audiotools
+descript-audio-codec
+argbind
+flatten-dict
+importlib-resources
+julius
+markdown2
+pystoi
+randomname
+torch-stoi
