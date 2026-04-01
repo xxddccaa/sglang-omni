@@ -271,6 +271,10 @@ def create_sglang_tts_engine_executor(
     stream_stride: int = 5,
     stream_followup_stride: int = 100,
     stream_vocoder_device: str | None = None,
+    mem_fraction_static: float = 0.85,
+    chunked_prefill_size: int = 8192,
+    max_running_requests: int = 64,
+    disable_cuda_graph: bool = False,
 ) -> EngineExecutor:
     """Factory for the S2-Pro TTS engine stage."""
     from sglang.srt.server_args import ServerArgs
@@ -309,10 +313,10 @@ def create_sglang_tts_engine_executor(
         model_path=checkpoint_dir,
         tp_size=1,
         dtype="bfloat16",
-        mem_fraction_static=0.85,
-        chunked_prefill_size=8192,
-        max_running_requests=64,
-        disable_cuda_graph=False,
+        mem_fraction_static=mem_fraction_static,
+        chunked_prefill_size=chunked_prefill_size,
+        max_running_requests=max_running_requests,
+        disable_cuda_graph=disable_cuda_graph,
     )
 
     engine = create_s2pro_sglang_engine(
